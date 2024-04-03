@@ -29,8 +29,9 @@ namespace c_ApiLayout.Controllers
             string name = userForm.name;
             string email = userForm.email;
             string description = userForm.description;
+            DateTime date = DateTime.Now;
             int ticketNum = 1;
-            Log.LogEvent(_testCollection, email, name, description, ticketNum);
+            Log.LogEvent(_testCollection, email, name, description, ticketNum, date);
             return Ok(email);
         }
     }
