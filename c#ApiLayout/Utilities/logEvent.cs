@@ -6,17 +6,17 @@ namespace c_ApiLayout.Utilities
 {
     public class Log
     {
-        public static void LogEvent(IMongoCollection<BsonDocument> logCollection, string name, string email, string description, int ticketNum, DateTime date)
+        public static void LogEvent(IMongoCollection<BsonDocument> logCollection, string name, string email, string description, string ticketID, DateTime date)
         {
-            var log = new BsonDocument
+            var logTicket = new BsonDocument
          {
-             {"Ticket", ticketNum },
              {"Name", name },
              {"Email", email },
              {"Description", description },
-             {"Date Created", date.ToString("yyyy-MM-dd HH:mm:ss")}
+             {"Date Created", date.ToString("yyyy-MM-dd HH:mm:ss")},
+             {"ticketID", ticketID }
          };
-            logCollection.InsertOne(log);
+            logCollection.InsertOne(logTicket);
         }
     }
 }

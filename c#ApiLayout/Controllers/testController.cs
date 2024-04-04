@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace c_ApiLayout.Controllers
 {
@@ -30,9 +31,26 @@ namespace c_ApiLayout.Controllers
             string email = userForm.email;
             string description = userForm.description;
             DateTime date = DateTime.Now;
-            int ticketNum = 1;
-            Log.LogEvent(_testCollection, email, name, description, ticketNum, date);
-            return Ok(email);
+            string ticketID = Guid.NewGuid().ToString();
+
+            Log.LogEvent(_testCollection, email, name, description, ticketID, date);
+
+            return Ok(new { message = "created ticket", email = email, description = description, ticketID = ticketID, date = date,});
+        }
+
+        [HttpGet("tickets")]
+
+        public IActionResult GetTicketById(string ticketID)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", ticketID);
+            var ticket = _testCollection.Find(filter).FirstOrDefault();
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(ticket);
         }
     }
 }
