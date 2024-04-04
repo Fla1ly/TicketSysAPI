@@ -1,10 +1,11 @@
 using c_ApiLayout.Utilities;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.Extensions.Logging;
+using MongoDB.Bson.IO;
+using System.Text.Json;
+using MongoDB.Bson.Serialization;
 
 namespace c_ApiLayout.Controllers
 {
@@ -14,15 +15,22 @@ namespace c_ApiLayout.Controllers
     {
         private readonly IMongoCollection<BsonDocument> _testCollection;
         private readonly IConfiguration _configuration;
+        private readonly IMongoClient _mongoClient;
+        private readonly MongoService _mongoService;
+        private readonly ILogger<apiLayoutController> _logger;
 
-        public apiLayoutController(IConfiguration configuration, IMongoClient mongoClient)
+        public apiLayoutController(IConfiguration configuration, IMongoClient mongoClient, ILogger<apiLayoutController> logger)
         {
+            _mongoClient = mongoClient;
             _configuration = configuration;
+            _logger = logger;
 
             var client = mongoClient;
             var userDatabase = client.GetDatabase("TicketSystems");
             _testCollection = userDatabase.GetCollection<BsonDocument>("Tickets");
         }
+
+
 
         [HttpPost("sendTicket")]
         public IActionResult dtoEndpoint([FromBody] UserDto userForm)
@@ -39,18 +47,28 @@ namespace c_ApiLayout.Controllers
         }
 
         [HttpGet("tickets")]
-
-        public IActionResult GetTicketById(string ticketID)
+        public IActionResult GetTickets()
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", ticketID);
-            var ticket = _testCollection.Find(filter).FirstOrDefault();
+            var tickets = _testCollection.Find(new BsonDocument()).ToList();
 
-            if (ticket == null)
+            _logger.LogInformation("Tickets:");
+            var ticketDtos = new List<UserDto>();
+
+            foreach (var ticket in tickets)
             {
-                return NotFound();
+                _logger.LogInformation(ticket.ToString());
+
+                var userDto = new UserDto
+                {
+                    name = ticket.GetValue("Name").AsString,
+                    email = ticket.GetValue("Email").AsString,
+                    description = ticket.GetValue("Description").AsString,
+                };
+
+                ticketDtos.Add(userDto);
             }
 
-            return Ok(ticket);
+            return Ok(ticketDtos);
         }
     }
 }
