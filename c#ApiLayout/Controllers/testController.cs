@@ -1,19 +1,10 @@
 using c_ApiLayout.Utilities;
 using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
-=======
-using MongoDB.Bson;
-using MongoDB.Driver;
-using Microsoft.Extensions.Logging;
-using MongoDB.Bson.IO;
-using System.Text.Json;
-using MongoDB.Bson.Serialization;
->>>>>>> 628e2392f3522d824baf16e28f77867ce601e0e6
 
 namespace c_ApiLayout.Controllers
 {
@@ -22,31 +13,13 @@ namespace c_ApiLayout.Controllers
     public class apiLayoutController : ControllerBase
     {
         private readonly IMongoCollection<BsonDocument> _testCollection;
-<<<<<<< HEAD
-=======
-        private readonly IConfiguration _configuration;
-        private readonly IMongoClient _mongoClient;
-        private readonly MongoService _mongoService;
->>>>>>> 628e2392f3522d824baf16e28f77867ce601e0e6
         private readonly ILogger<apiLayoutController> _logger;
 
         public apiLayoutController(IConfiguration configuration, IMongoClient mongoClient, ILogger<apiLayoutController> logger)
         {
-<<<<<<< HEAD
             _logger = logger;
             _testCollection = mongoClient.GetDatabase("TicketSystems").GetCollection<BsonDocument>("Tickets");
-=======
-            _mongoClient = mongoClient;
-            _configuration = configuration;
-            _logger = logger;
-
-            var client = mongoClient;
-            var userDatabase = client.GetDatabase("TicketSystems");
-            _testCollection = userDatabase.GetCollection<BsonDocument>("Tickets");
->>>>>>> 628e2392f3522d824baf16e28f77867ce601e0e6
         }
-
-
 
         [HttpPost("sendTicket")]
         public IActionResult CreateTicket([FromBody] UserDto userForm)
@@ -77,7 +50,6 @@ namespace c_ApiLayout.Controllers
         {
             var tickets = _testCollection.Find(new BsonDocument()).ToList();
 
-<<<<<<< HEAD
             _logger.LogInformation("Tickets retrieved.");
 
             var ticketList = new List<object>();
@@ -94,26 +66,6 @@ namespace c_ApiLayout.Controllers
             }
 
             return Ok(ticketList);
-=======
-            _logger.LogInformation("Tickets:");
-            var ticketDtos = new List<UserDto>();
-
-            foreach (var ticket in tickets)
-            {
-                _logger.LogInformation(ticket.ToString());
-
-                var userDto = new UserDto
-                {
-                    name = ticket.GetValue("Name").AsString,
-                    email = ticket.GetValue("Email").AsString,
-                    description = ticket.GetValue("Description").AsString,
-                };
-
-                ticketDtos.Add(userDto);
-            }
-
-            return Ok(ticketDtos);
->>>>>>> 628e2392f3522d824baf16e28f77867ce601e0e6
         }
     }
 }
