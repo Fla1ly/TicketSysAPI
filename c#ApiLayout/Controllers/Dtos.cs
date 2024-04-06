@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
+
 public class UserDto
 {
-    [BindNever]
-    public string name { get; set; }
-    public string email { get; set; }
-    public string description { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string Description { get; set; }
+    public string TicketID { get; }
 
-    public readonly string ticketID = Guid.NewGuid().ToString();
-
+    public UserDto()
+    {
+        TicketID = Guid.NewGuid().ToString();
+    }
 }
