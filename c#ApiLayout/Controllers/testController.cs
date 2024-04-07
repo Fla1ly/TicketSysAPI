@@ -1,4 +1,3 @@
-using c_ApiLayout.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ namespace c_ApiLayout.Controllers
         }
 
         [HttpPost("sendTicket")]
-        public IActionResult CreateTicket([FromBody] UserDto userForm)
+        public IActionResult CreateTicket([FromBody] TicketDto ticketDto)
         {
             if (!ModelState.IsValid)
             {
@@ -31,18 +30,19 @@ namespace c_ApiLayout.Controllers
 
             var ticketDocument = new BsonDocument
             {
-                { "Name", userForm.Name },
-                { "Email", userForm.Email },
-                { "Description", userForm.Description },
-                { "Date Created", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }, // Store as string in ISO format
-                { "ticketID", userForm.TicketID }
+                { "Name", ticketDto.Name },
+                { "Email", ticketDto.Email },
+                { "Description", ticketDto.Description },
+                { "Date Created", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+                { "ticketID", ticketDto.TicketID },
+                { "TicketStatus", ticketDto.TicketStatus = "Open" }
             };
 
             _testCollection.InsertOne(ticketDocument);
 
-            _logger.LogInformation("New ticket created. Ticket ID: {TicketID}, Name: {Name}, Email: {Email}, Description: {Description}", userForm.TicketID, userForm.Name, userForm.Email, userForm.Description);
+            _logger.LogInformation("New ticket created. Ticket ID: {TicketID}, Name: {Name}, Email: {Email}, Description: {Description}", ticketDto.TicketID, ticketDto.Name, ticketDto.Email, ticketDto.Description);
 
-            return Ok(new { message = "created ticket", email = userForm.Email, description = userForm.Description, ticketID = userForm.TicketID, date = DateTime.UtcNow });
+            return Ok(new { message = "created ticket", email = ticketDto.Email, description = ticketDto.Description, ticketID = ticketDto.TicketID, date = DateTime.UtcNow, ticketStatus = ticketDto.TicketStatus });
         }
 
         [HttpGet("tickets")]
@@ -60,11 +60,11 @@ namespace c_ApiLayout.Controllers
                     Name = ticket.GetValue("Name").AsString,
                     Email = ticket.GetValue("Email").AsString,
                     Description = ticket.GetValue("Description").AsString,
-                    DateCreated = DateTime.Parse(ticket.GetValue("Date Created").AsString).ToUniversalTime(),
+                    DateCreated = DateTime.Parse(ticket.GetValue("Date Created").AsString),
+                    TicketStatus = ticket.GetValue("TicketStatus").AsString,
                     TicketID = ticket.GetValue("ticketID").AsString
                 });
             }
-
             return Ok(ticketList);
         }
     }
