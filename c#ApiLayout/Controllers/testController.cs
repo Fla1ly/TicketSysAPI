@@ -32,6 +32,7 @@ namespace c_ApiLayout.Controllers
             {
                 { "Name", ticketDto.Name },
                 { "Email", ticketDto.Email },
+                { "Subject", ticketDto.Subject },
                 { "Description", ticketDto.Description },
                 { "Date Created", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
                 { "ticketID", ticketDto.TicketID },
@@ -40,9 +41,9 @@ namespace c_ApiLayout.Controllers
 
             _testCollection.InsertOne(ticketDocument);
 
-            _logger.LogInformation("New ticket created. Ticket ID: {TicketID}, Name: {Name}, Email: {Email}, Description: {Description}", ticketDto.TicketID, ticketDto.Name, ticketDto.Email, ticketDto.Description);
+            _logger.LogInformation("New ticket created. Ticket ID: {TicketID}, Name: {Name}, Email: {Email}, Subject: {Subject}, Description: {Description}", ticketDto.TicketID, ticketDto.Name, ticketDto.Email, ticketDto.Subject, ticketDto.Description);
 
-            return Ok(new { message = "created ticket", email = ticketDto.Email, description = ticketDto.Description, ticketID = ticketDto.TicketID, date = DateTime.UtcNow, ticketStatus = ticketDto.TicketStatus });
+            return Ok(new { message = "created ticket", name = ticketDto.Name, email = ticketDto.Email, subject = ticketDto.Subject, description = ticketDto.Description, ticketID = ticketDto.TicketID, date = DateTime.UtcNow, ticketStatus = ticketDto.TicketStatus });
         }
 
         [HttpGet("tickets")]
@@ -59,6 +60,7 @@ namespace c_ApiLayout.Controllers
                 {
                     Name = ticket.GetValue("Name").AsString,
                     Email = ticket.GetValue("Email").AsString,
+                    Subject = ticket.GetValue("Subject").AsString,
                     Description = ticket.GetValue("Description").AsString,
                     DateCreated = DateTime.Parse(ticket.GetValue("Date Created").AsString),
                     TicketStatus = ticket.GetValue("TicketStatus").AsString,
