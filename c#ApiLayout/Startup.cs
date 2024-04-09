@@ -1,6 +1,14 @@
 ﻿using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace c_ApiLayout
 {
@@ -41,7 +49,6 @@ namespace c_ApiLayout
                 });
             });
         }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:5173"));
