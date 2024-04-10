@@ -9,6 +9,8 @@ public class TicketDto
     public string Description { get; set; }
     public string TicketID { get; }
     public string TicketStatus { get; set; }
+    public string NewStatus { get; set; }
+    public string Reply { get; set; }
     public TicketDto()
     {
         TicketID = Guid.NewGuid().ToString();

@@ -146,6 +146,42 @@ namespace c_ApiLayout.Controllers
             return Ok(ticketDetails);
         }
 
+        [HttpPost("updateTicketAndAddReply/{ticketId}")]
+        public IActionResult UpdateTicketAndAddReply(string ticketId, [FromBody] TicketDto ticketDto)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("ticketID", ticketId);
+            var update = Builders<BsonDocument>.Update
+                .Set("TicketStatus", ticketDto.NewStatus)
+                .Push("Replies", ticketDto.Reply);
+            var result = _testCollection.UpdateOne(filter, update);
+
+            if (result.ModifiedCount == 0)
+            {
+                _logger.LogInformation("Ticket not found with ID: {TicketID}", ticketId);
+                return NotFound("Ticket Not Found");
+            }
+
+            _logger.LogInformation("Ticket status updated and reply added. Ticket ID: {TicketID}, New Status: {NewStatus}, Reply: {Reply}", ticketId, ticketDto.NewStatus, ticketDto.Reply);
+
+            return Ok(new { message = "Ticket status updated and reply added successfully", ticketId, newStatus = ticketDto.NewStatus, reply = ticketDto.Reply });
+        }
+
+        [HttpPost("deleteTicket/{ticketId}")]
+        public IActionResult DeleteTicket(string ticketId)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("ticketID", ticketId);
+            var result = _testCollection.DeleteOne(filter);
+
+            if (result.DeletedCount == 0)
+            {
+                _logger.LogInformation("Ticket not found with ID: {TicketID}", ticketId);
+                return NotFound("Ticket Not Found");
+            }
+
+            _logger.LogInformation("Ticket deleted successfully. Ticket ID: {TicketID}", ticketId);
+
+            return Ok(new { message = "Ticket deleted successfully", ticketId });
+        }
 
     }
 }
