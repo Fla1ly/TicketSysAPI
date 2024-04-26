@@ -29,7 +29,6 @@ namespace c_ApiLayout.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] AdminDto adminDto)
         {
-            // Authenticate admin (validate credentials from MongoDB)
             if (IsValidAdmin(adminDto.Username, adminDto.Password))
             {
                 return Ok(new { message = "Login successful" });
@@ -41,7 +40,6 @@ namespace c_ApiLayout.Controllers
         }
         private bool IsValidAdmin(string username, string password)
         {
-            // Perform authentication logic (e.g., check against MongoDB)
             var user = _userCollection.Find(Builders<BsonDocument>.Filter.Eq("username", username) & Builders<BsonDocument>.Filter.Eq("password", password)).FirstOrDefault();
             return user != null;
         }
